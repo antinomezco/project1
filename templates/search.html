@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+<html>
+    <head>
+        <title>{{ title }}</title>
+    </head>
+    <body>
+        {% block content %}
+            <form action="{{ url_for('search_page') }}" method="post">
+                <input type="text" name="search_book" placeholder="Search for book">
+                <button>Submit</button>
+            <form>
+            <hr>
+
+        {% endblock content %}
+    </body>
+</html>
+

@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+<html>
+    <head>
+        <title>{{ title }}</title>
+    </head>
+    <body>
+        {% block content %}
+            <h1>Registration Form</h1>
+            <p>You're coming from {{ url }}</p>
+            <form action="{{ url_for('login_page') }}" method="post">
+                <input type="text" name="username" placeholder="Name">
+                <input type="password" name="password" placeholder="Password">
+                <input type="password" name="password_confirm" placeholder="Password confirm">
+                <button>Submit</button>
+            <form>
+        {% endblock content %}
+    </body>
+</html>
+

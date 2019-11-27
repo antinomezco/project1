@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+<html>
+    <head>
+        <title>Login</title>
+    </head>
+    <body>
+        {% block content %}
+            {% if rmessage %}
+                <h1>{{ rmessage }} </h1>
+            {% else %}
+                <h1>Please log in</h1>
+            {% endif %}
+            <form action="{{ url_for('search_page') }}" method="post">
+                <input type="text" name="username" placeholder="Name">
+                <input type="password" name="password" placeholder="Password">
+                <button>Submit</button>
+            <form>
+        {% endblock content %}
+    </body>
+</html>
+

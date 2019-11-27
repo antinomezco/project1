@@ -1,0 +1,28 @@
+<html>
+    <head>
+        {% if title %}
+            <title>{{ title }}</title>
+        {% else %}
+            <title>Project 1 - Goodreads</title>
+        {% endif %}
+    </head>
+    <body>
+        <div>
+            Project 1 - Goodreads: <a href="/">Home</a>
+        </div>
+        <hr>
+        {% block content %}
+        {% endblock content %}
+        <hr>
+        <div>
+            <ul>
+                <li><a href="{{ url_for('book_page') }}">Book</a></li>
+                <li><a href="{{ url_for('review_page') }}">Review</a></li>
+                <li><a href="{{ url_for('search_page') }}">Search</a></li>
+                <li><a href="{{ url_for('logout_page') }}">Logout</a></li>
+                <li><a href="{{ url_for('login_page') }}">Login</a></li>
+                <li><a href="{{ url_for('register_page') }}">Register</a></li>
+            </ul>
+        </div>
+    </body>
+</html>
