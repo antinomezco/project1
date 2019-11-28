@@ -5,6 +5,7 @@
         {% else %}
             <title>Project 1 - Goodreads</title>
         {% endif %}
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css" integrity="sha384-SI27wrMjH3ZZ89r4o+fGIJtnzkAnFs3E4qz9DIYioCQ5l9Rd/7UAa8DHcaL8jkWt" crossorigin="anonymous">
     </head>
     <body>
         <div>
@@ -16,12 +17,15 @@
         <hr>
         <div>
             <ul>
+            {% if s %}
                 <li><a href="{{ url_for('book_page') }}">Book</a></li>
                 <li><a href="{{ url_for('review_page') }}">Review</a></li>
                 <li><a href="{{ url_for('search_page') }}">Search</a></li>
                 <li><a href="{{ url_for('logout_page') }}">Logout</a></li>
+            {% else %}
                 <li><a href="{{ url_for('login_page') }}">Login</a></li>
                 <li><a href="{{ url_for('register_page') }}">Register</a></li>
+            {% endif %}
             </ul>
         </div>
     </body>

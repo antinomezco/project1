@@ -6,6 +6,12 @@
     </head>
     <body>
         {% block content %}
+            <h1>Book Search</h1>
+            {% if s %}
+                <p> Hello, {{ s }} </p>
+            {% else %}
+                <p>Didn't work</p>
+            {% endif %}
             <form action="{{ url_for('search_page') }}" method="post">
                 <input type="text" name="search_book" placeholder="Search for book">
                 <button>Submit</button>

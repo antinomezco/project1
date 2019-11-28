@@ -6,7 +6,13 @@
     </head>
     <body>
         {% block content %}
-            <p>review page</p>
+            <h1>Book Search</h1>
+            {% if s %}
+                <p> Hello, {{ s }} </p>
+            {% else %}
+                <p>Didn't work</p>
+            {% endif %}
+            <hr>
         {% endblock content %}
     </body>
 </html>

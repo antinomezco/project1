@@ -6,12 +6,11 @@
     </head>
     <body>
         {% block content %}
-            {% if s %}
-                <h1> Hello, {{ s }} </h1>
+            {% if rmessage %}
+                <h1>{{ rmessage }} </h1>
             {% else %}
-                <h1>no work</h1>
+                <h1>You have logged out</h1>
             {% endif %}
-            <p>book details</p>
         {% endblock content %}
     </body>
 </html>
