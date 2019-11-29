@@ -21,11 +21,6 @@ Session(app)
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
-#def check_login():
-#    if 'username' in session:
-#        s = session['username'];
-#        return render_template('search.html', title=title, s = s)
-
 @app.route("/")
 @app.route("/login", methods=["GET","POST"])
 def login_page():
@@ -56,21 +51,36 @@ def search_page():
             return render_template("error.html", message="Incorrect username and/or password.")
     if 'username' in session:
         s = session['username'];
-        return render_template('search.html',s = s)
+        return render_template('search.html', s = s)
     return render_template("search.html", title=title, s=s)
+
+@app.route("/book", methods=["GET","POST"])
+def book_page():
+    title = "Search results page"
+    #isbn = str(request.form.get("search_term"))
+    search_box = str(request.form.get("search_term"))
+    select = ''.join(request.form.getlist('search_type'))
+    #results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
+    #results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE :select = :search_box", {"select": select, "search_box": search_box}).fetchall()
+    results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE isbn = :search_box", {"select": select, "search_box": search_box}).fetchall()
+    test_sql = f"SELECT title, author, isbn, year FROM books_table WHERE {select} = {search_box}"
+    if 'username' in session:
+        s = session['username'];
+        return render_template('book.html', title=title, s = s, results=results, select=select, search_box=search_box, test_sql=test_sql)
+    return render_template("error.html", message="Please log in.")
+
+@app.route("/book/<isbn_num>")
+def book_details(isbn_num):
+    title = "Book details"
+    book_data = db.execute("SELECT * FROM books_table WHERE isbn = :isbn", {"isbn": isbn_num}).fetchone()
+    if book_data is None:
+        return render_template("error.html", message="No book with that ISBN exists")
+    return render_template("book_details.html", message="Please log in.", title=title, book_isbn=book_data)
 
 @app.route("/register")
 def register_page():
     title = "Register"
     return render_template("register.html", title=title)
-
-@app.route("/book")
-def book_page():
-    title = "Book"
-    if 'username' in session:
-        s = session['username'];
-        return render_template('book.html', title=title, s = s)
-    return render_template("error.html", message="Please log in.")
 
 @app.route("/review")
 def review_page():
