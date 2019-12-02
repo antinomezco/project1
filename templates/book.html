@@ -17,7 +17,7 @@
             <hr>
             {% for result in results %}
                 <ul>
-                    <li><a href="{{ url_for('book_details', isbn_num=results.isbn) }}">{{ result }}</a></li>
+                    <li><a href="{{ url_for('book_details', isbn_num=result.isbn) }}">{{ result }}</a></li>
                 </ul>
             {% else %}
             <div>no results given</div>

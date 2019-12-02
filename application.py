@@ -57,25 +57,30 @@ def search_page():
 @app.route("/book", methods=["GET","POST"])
 def book_page():
     title = "Search results page"
-    #isbn = str(request.form.get("search_term"))
     search_box = str(request.form.get("search_term"))
     select = ''.join(request.form.getlist('search_type'))
-    #results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE isbn = :isbn", {"isbn": isbn}).fetchall()
-    #results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE :select = :search_box", {"select": select, "search_box": search_box}).fetchall()
-    results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE isbn = :search_box", {"select": select, "search_box": search_box}).fetchall()
-    test_sql = f"SELECT title, author, isbn, year FROM books_table WHERE {select} = {search_box}"
+    #try to make the following work to not use an if results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE :select = :search_box", {"select": select, "search_box": search_box}).fetchall()
+    if select == "isbn":
+        results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE isbn = :search_box", {"select": select, "search_box": search_box}).fetchall()
+    elif select == "author":
+        results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE author = :search_box", {"select": select, "search_box": search_box}).fetchall()
+    elif select == "title":
+        results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE title = :search_box", {"select": select, "search_box": search_box}).fetchall()
     if 'username' in session:
         s = session['username'];
-        return render_template('book.html', title=title, s = s, results=results, select=select, search_box=search_box, test_sql=test_sql)
+        return render_template('book.html', title=title, s = s, results=results, select=select, search_box=search_box)
     return render_template("error.html", message="Please log in.")
 
 @app.route("/book/<isbn_num>")
 def book_details(isbn_num):
     title = "Book details"
     book_data = db.execute("SELECT * FROM books_table WHERE isbn = :isbn", {"isbn": isbn_num}).fetchone()
+    if 'username' in session:
+        s = session['username'];
+        return render_template('book_details.html', title=title, s = s, book_isbn=book_data)
     if book_data is None:
         return render_template("error.html", message="No book with that ISBN exists")
-    return render_template("book_details.html", message="Please log in.", title=title, book_isbn=book_data)
+    return render_template("error.html", message="Please log in.", title=title, s=s)
 
 @app.route("/register")
 def register_page():
