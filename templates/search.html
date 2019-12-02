@@ -10,14 +10,26 @@
             {% if s %}
                 <p> Hello, {{ s }} </p>
             {% else %}
-                <p>Didn't work</p>
+                <p>Logged in, but no s value</p>
             {% endif %}
-            <form action="{{ url_for('search_page') }}" method="post">
-                <input type="text" name="search_book" placeholder="Search for book">
-                <button>Submit</button>
-            <form>
-            <hr>
-
+            <form class="form-inline" method="POST" action="{{ url_for('book_page') }}">
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon">Please select term to search for:  </span>
+                        <select name="search_type">
+                            <option value="isbn">ISBN</option>
+                            <option value="title">Title</option>
+                            <option value="author">Author</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input type="text" name="search_term" placeholder="Search">
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </form>
         {% endblock content %}
     </body>
 </html>

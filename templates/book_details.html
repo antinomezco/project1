@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+<html>
+    <head>
+        <title>{{ title }}</title>
+    </head>
+    <body>
+        {% block content %}
+            {% if s %}
+                <h1> Hello, {{ s }} </h1>
+            {% else %}
+                <h1>no username session</h1>
+            {% endif %}
+            <p>book details</p>
+            <p>{{ book_isbn.isbn }}</p>
+            <p>{{ book_isbn.author }}</p>
+            <p>{{ book_isbn.title }}</p>
+            <p>{{ book_isbn.year }}</p>
+        {% endblock content %}
+    </body>
+</html>
+
