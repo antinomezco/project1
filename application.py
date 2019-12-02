@@ -4,6 +4,7 @@ from flask import Flask, session, render_template, request
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+import requests, json
 #from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
@@ -20,6 +21,9 @@ Session(app)
 # Set up database
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
+
+# Set up Goodreads API key:
+grkey = os.getenv("GOODREADS_API_KEY")
 
 @app.route("/")
 @app.route("/login", methods=["GET","POST"])
@@ -57,15 +61,15 @@ def search_page():
 @app.route("/book", methods=["GET","POST"])
 def book_page():
     title = "Search results page"
-    search_box = str(request.form.get("search_term"))
+    search_box = "%" + str(request.form.get("search_term")) + "%"
     select = ''.join(request.form.getlist('search_type'))
     #try to make the following work to not use an if results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE :select = :search_box", {"select": select, "search_box": search_box}).fetchall()
     if select == "isbn":
-        results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE isbn = :search_box", {"select": select, "search_box": search_box}).fetchall()
+        results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE isbn ILIKE :search_box", {"select": select, "search_box": search_box}).fetchall()
     elif select == "author":
-        results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE author = :search_box", {"select": select, "search_box": search_box}).fetchall()
+        results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE author ILIKE :search_box", {"select": select, "search_box": search_box}).fetchall()
     elif select == "title":
-        results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE title = :search_box", {"select": select, "search_box": search_box}).fetchall()
+        results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE title ILIKE :search_box", {"select": select, "search_box": search_box}).fetchall()
     if 'username' in session:
         s = session['username'];
         return render_template('book.html', title=title, s = s, results=results, select=select, search_box=search_box)
@@ -74,10 +78,11 @@ def book_page():
 @app.route("/book/<isbn_num>")
 def book_details(isbn_num):
     title = "Book details"
+    data = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": grkey, "isbns": isbn_num}).json()
     book_data = db.execute("SELECT * FROM books_table WHERE isbn = :isbn", {"isbn": isbn_num}).fetchone()
     if 'username' in session:
         s = session['username'];
-        return render_template('book_details.html', title=title, s = s, book_isbn=book_data)
+        return render_template('book_details.html', title=title, s = s, book_isbn=book_data, data=data)
     if book_data is None:
         return render_template("error.html", message="No book with that ISBN exists")
     return render_template("error.html", message="Please log in.", title=title, s=s)

@@ -12,6 +12,7 @@
             {% else %}
                 <p>Logged in, but no s value</p>
             {% endif %}
+            <p> {{ delete }} </p>
             <form class="form-inline" method="POST" action="{{ url_for('book_page') }}">
                 <div class="form-group">
                     <div class="input-group">

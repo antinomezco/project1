@@ -16,6 +16,8 @@
             <p>{{ book_isbn.author }}</p>
             <p>{{ book_isbn.title }}</p>
             <p>{{ book_isbn.year }}</p>
+            <p>Amount of ratings: {{ data["books"][0]["ratings_count"] }}</p>
+            <p>Rating average: {{ data["books"][0]["average_rating"] }}</p>
         {% endblock content %}
     </body>
 </html>
