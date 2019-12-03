@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+<html>
+    <head>
+        <title>{{ title }}</title>
+    </head>
+    <body>
+        {% block content %}
+            {% if s %}
+                <h1> Hello, {{ s }}, the review below is now in the database (maybe) </h1>
+            {% else %}
+                <h1>no username session</h1>
+            {% endif %}
+            <p>book details</p>
+            <p>{{ review }}</p>
+            <p>{{ rating }}</p>
+            <p>{{ isbn }}</p>
+        {% endblock content %}
+    </body>
+</html>

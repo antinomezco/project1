@@ -12,20 +12,39 @@
                 <h1>no username session</h1>
             {% endif %}
             <p>book details</p>
-            <p>{{ book_data.isbn }}</p>
-            <p>{{ book_data.author }}</p>
-            <p>{{ book_data.title }}</p>
-            <p>{{ book_data.year }}</p>
+            <p>isbn from database {{ book_data.isbn }}</p>
+            <p>isbn from html {{ isbn_num }}</p>
+            <p>Book author: {{ book_data.author }}</p>
+            <p>Book title: {{ book_data.title }}</p>
+            <p>Year or release: {{ book_data.year }}</p>
             <p>Amount of ratings: {{ goodreads_data["books"][0]["ratings_count"] }}</p>
             <p>Rating average: {{ goodreads_data["books"][0]["average_rating"] }}</p>
             {% if book_data.review %}
                 <p>{{ book_data.review }}</p>
             {% else %}
-                <input type="text" name="review" placeholder="Write your review">
-            {% endif %}
-            {% if book_data.rating %}
-            {% else %}
-                {{ book_data.rating }}
+                <form class="form-inline" method="POST" action="{{ url_for('review_post_page') }}">
+                    <div class="form-group">
+                        <div>
+                            <input type="text" name="review" placeholder="write review here">
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">Give this book a number from 1-5</span>
+                            <select name="rating">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="3">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <div>
+                            <input type="hidden" name="isbn" value="{{ isbn_num }}">
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </form>
             {% endif %}
         {% endblock content %}
     </body>
