@@ -12,12 +12,21 @@
                 <h1>no username session</h1>
             {% endif %}
             <p>book details</p>
-            <p>{{ book_isbn.isbn }}</p>
-            <p>{{ book_isbn.author }}</p>
-            <p>{{ book_isbn.title }}</p>
-            <p>{{ book_isbn.year }}</p>
-            <p>Amount of ratings: {{ data["books"][0]["ratings_count"] }}</p>
-            <p>Rating average: {{ data["books"][0]["average_rating"] }}</p>
+            <p>{{ book_data.isbn }}</p>
+            <p>{{ book_data.author }}</p>
+            <p>{{ book_data.title }}</p>
+            <p>{{ book_data.year }}</p>
+            <p>Amount of ratings: {{ goodreads_data["books"][0]["ratings_count"] }}</p>
+            <p>Rating average: {{ goodreads_data["books"][0]["average_rating"] }}</p>
+            {% if book_data.review %}
+                <p>{{ book_data.review }}</p>
+            {% else %}
+                <input type="text" name="review" placeholder="Write your review">
+            {% endif %}
+            {% if book_data.rating %}
+            {% else %}
+                {{ book_data.rating }}
+            {% endif %}
         {% endblock content %}
     </body>
 </html>

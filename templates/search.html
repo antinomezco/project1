@@ -8,7 +8,7 @@
         {% block content %}
             <h1>Book Search</h1>
             {% if s %}
-                <p> Hello, {{ s }} </p>
+                <p> Hello, {{ s }} with userid {{ session['user_id'] }} </p>
             {% else %}
                 <p>Logged in, but no s value</p>
             {% endif %}

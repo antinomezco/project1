@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, session, render_template, request
+from flask import Flask, session, render_template, request, jsonify
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -24,6 +24,9 @@ db = scoped_session(sessionmaker(bind=engine))
 
 # Set up Goodreads API key:
 grkey = os.getenv("GOODREADS_API_KEY")
+
+# Enabling jsonify pretty printing
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
 @app.route("/")
 @app.route("/login", methods=["GET","POST"])
@@ -49,8 +52,9 @@ def search_page():
     if request.method == 'POST':
         username = request.form.get("username")
         password = request.form.get("password")
-        user_match = db.execute("SELECT * FROM username_table WHERE username = :username AND password = :password", {"username": username, "password": password}).fetchone()
+        user_match = db.execute("SELECT username, password, user_id FROM username_table WHERE username = :username AND password = :password", {"username": username, "password": password}).fetchone()
         session['username']=username
+        session['user_id']=user_match.user_id
         if user_match is None:
             return render_template("error.html", message="Incorrect username and/or password.")
     if 'username' in session:
@@ -65,40 +69,44 @@ def book_page():
     select = ''.join(request.form.getlist('search_type'))
     #try to make the following work to not use an if results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE :select = :search_box", {"select": select, "search_box": search_box}).fetchall()
     if select == "isbn":
-        results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE isbn ILIKE :search_box", {"select": select, "search_box": search_box}).fetchall()
+        results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE isbn ILIKE :search_box",
+        {"select": select, "search_box": search_box}).fetchall()
     elif select == "author":
-        results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE author ILIKE :search_box", {"select": select, "search_box": search_box}).fetchall()
+        results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE author ILIKE :search_box",
+        {"select": select, "search_box": search_box}).fetchall()
     elif select == "title":
-        results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE title ILIKE :search_box", {"select": select, "search_box": search_box}).fetchall()
+        results = db.execute("SELECT title, author, isbn, year FROM books_table WHERE title ILIKE :search_box",
+        {"select": select, "search_box": search_box}).fetchall()
     if 'username' in session:
         s = session['username'];
-        return render_template('book.html', title=title, s = s, results=results, select=select, search_box=search_box)
+        return render_template('book.html', title=title, s = s, results=results,
+        select=select, search_box=search_box)
     return render_template("error.html", message="Please log in.")
 
-@app.route("/book/<isbn_num>")
+@app.route("/book/<isbn_num>", methods=["GET","POST"])
 def book_details(isbn_num):
     title = "Book details"
-    data = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": grkey, "isbns": isbn_num}).json()
-    book_data = db.execute("SELECT * FROM books_table WHERE isbn = :isbn", {"isbn": isbn_num}).fetchone()
     if 'username' in session:
-        s = session['username'];
-        return render_template('book_details.html', title=title, s = s, book_isbn=book_data, data=data)
-    if book_data is None:
-        return render_template("error.html", message="No book with that ISBN exists")
-    return render_template("error.html", message="Please log in.", title=title, s=s)
+        s = session['username']
+        book_data = db.execute("SELECT books_table.isbn, books_table.title, books_table.author, books_table.year, review_table.review, review_table.rating FROM books_table, review_table, username_table WHERE books_table.isbn= review_table.isbn AND books_table.isbn = :isbn AND review_table.user_id = :user_id", {"isbn": isbn_num, "user_id": session['user_id']}).fetchone()
+        if book_data is None:
+            return render_template("error.html", message="No book with that search query exists")
+        goodreads_data = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": grkey, "isbns": isbn_num}).json()
+        if request.headers.get("Referer") == "https://antinomy.pythonanywhere.com/book":
+            return render_template('book_details.html', title=title, s = s,
+            book_data=book_data, goodreads_data=goodreads_data)
+        if request.method == 'GET':
+            return jsonify({"title":book_data.title,
+            "author":book_data.author,
+            "year":book_data.year, "isbn":book_data.isbn,
+            "review_count":goodreads_data["books"][0]["ratings_count"],
+            "average_rating":goodreads_data["books"][0]["average_rating"]})
+    return render_template("error.html", message="Please log in.", title=title)
 
 @app.route("/register")
 def register_page():
     title = "Register"
     return render_template("register.html", title=title)
-
-@app.route("/review")
-def review_page():
-    title = "Review"
-    if 'username' in session:
-        s = session['username'];
-        return render_template('review.html', title=title, s = s)
-    return render_template("error.html", message="Please log in.")
 
 @app.route("/logout")
 def logout_page():
