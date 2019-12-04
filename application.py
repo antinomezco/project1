@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, session, render_template, request, jsonify
+from flask import Flask, session, render_template, request, jsonify, abort
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -88,21 +88,23 @@ def book_details(isbn_num):
     title = "Book details"
     if 'username' in session:
         s = session['username']
-        #book_data = db.execute("SELECT books_table.isbn, books_table.title, books_table.author, books_table.year, review_table.review, review_table.rating FROM books_table, review_table WHERE books_table.isbn= review_table.isbn AND books_table.isbn = :isbn AND review_table.user_id = :user_id", {"isbn": isbn_num, "user_id": session['user_id']}).fetchone()
         book_data = db.execute("SELECT books_table.isbn, books_table.title, books_table.author, books_table.year, review_table.review, review_table.rating, review_table.isbn FROM books_table LEFT JOIN review_table ON books_table.isbn = review_table.isbn WHERE books_table.isbn = :isbn AND review_table.user_id = :user_id", {"isbn": isbn_num, "user_id": session['user_id']}).fetchone()
         if book_data is None:
             book_data = db.execute("SELECT books_table.isbn, books_table.title, books_table.author, books_table.year FROM books_table WHERE books_table.isbn = :isbn", {"isbn": isbn_num, "user_id": session['user_id']}).fetchone()
-        goodreads_data = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": grkey, "isbns": isbn_num}).json()
         if request.headers.get("Referer") == "https://antinomy.pythonanywhere.com/book":
+            goodreads_data = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": grkey, "isbns": isbn_num}).json()
             return render_template('book_details.html', title=title, s = s,
             book_data=book_data, goodreads_data=goodreads_data, isbn_num=isbn_num)
         if request.method == 'GET':
-            return jsonify(
-                {"title":book_data.title,
-                "author":book_data.author,
-                "year":book_data.year, "isbn":book_data.isbn,
-                "review_count":goodreads_data["books"][0]["ratings_count"],
-                "average_rating":goodreads_data["books"][0]["average_rating"]})
+            try:
+                return jsonify(
+                    {"title":book_data.title,
+                    "author":book_data.author,
+                    "year":book_data.year, "isbn":book_data.isbn,
+                    "review_count":goodreads_data["books"][0]["ratings_count"],
+                    "average_rating":goodreads_data["books"][0]["average_rating"]})
+            except:
+                abort(404)
     return render_template("error.html", message="Please log in.", title=title)
 
 @app.route("/review_post", methods=["POST"])
@@ -128,3 +130,4 @@ def logout_page():
     if 'username' in session:
         session.pop('username',None)
         return render_template('logout.html')
+
