@@ -25,9 +25,6 @@
                 </tr>
             </table>
             {% if book_data.review %}
-                <p class="col-sm-offset-2">Personal rating: {{ book_data.rating }}</p>
-                <p class="col-sm-offset-2">Personal review: {{ book_data.review }}</p>
-            </div>
             {% else %}
                 <form class="form" method="POST" action="{{ url_for('review_post_page') }}">
                     <div class="form-group">
@@ -57,6 +54,24 @@
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
+            {% endif %}
+            {% if user_reviews %}
+                <table class="table table-striped">
+                    <tr>
+                        <th scope="col">User</th>
+                        <th scope="col">Review</th>
+                        <th scope="col">Rating</th>
+                    </tr>
+                {% for user_review in user_reviews %}
+                    <tr>
+                        <td>{{ user_review.username }}</a></td>
+                        <td>{{ user_review.review }}</a></td>
+                        <td>{{ user_review.rating }}</a></td>
+                    </tr>
+                {% endfor %}
+                </table>
+            {% else %}
+                <div>No reviews available for this book</div>
             {% endif %}
         {% endblock content %}
     </body>

@@ -21,10 +21,10 @@
                     </tr>
                 {% for result in results %}
                     <tr>
-                        <td><a href="{{ url_for('book_details', isbn_num=result.isbn) }}">{{ result.title }}</a></li></td>
-                        <td><a href="{{ url_for('book_details', isbn_num=result.isbn) }}">{{ result.author }}</a></li></td>
-                        <td><a href="{{ url_for('book_details', isbn_num=result.isbn) }}">{{ result.year }}</a></li></td>
-                        <td><a href="{{ url_for('book_details', isbn_num=result.isbn) }}">{{ result.isbn }}</a></li></td>
+                        <td><a href="{{ url_for('book_details', isbn_num=result.isbn) }}">{{ result.title }}</a></td>
+                        <td><a href="{{ url_for('book_details', isbn_num=result.isbn) }}">{{ result.author }}</a></td>
+                        <td><a href="{{ url_for('book_details', isbn_num=result.isbn) }}">{{ result.year }}</a></td>
+                        <td><a href="{{ url_for('book_details', isbn_num=result.isbn) }}">{{ result.isbn }}</a></td>
                     </tr>
                 {% endfor %}
                 </table>
