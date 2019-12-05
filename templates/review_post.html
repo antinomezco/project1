@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+<html>
+    <head>
+        <title>{{ title }}</title>
+    </head>
+    <body>
+        {% block content %}
+            <h3> Your book page has been updated with your review and rating</h3>
+            <p>Review:</p>
+            <p>{{ review }}</p>
+            <p>Rating:</p>
+            <p>{{ rating }}</p>
+        {% endblock content %}
+    </body>
+</html>

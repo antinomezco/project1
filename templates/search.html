@@ -6,26 +6,28 @@
     </head>
     <body>
         {% block content %}
-            <h1>Book Search</h1>
-            {% if s %}
-                <p> Hello, {{ s }} </p>
-            {% else %}
-                <p>Logged in, but no s value</p>
-            {% endif %}
-            <form class="form-inline" method="POST" action="{{ url_for('book_page') }}">
+            <form class="form-horizontal" action="{{ url_for('book_page') }}"  method="post">
                 <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <p class="input-group-addon">Please select term to search for:  </p>
+                    </div>
                     <div class="input-group">
-                        <span class="input-group-addon">Please select term to search for:  </span>
-                        <select name="search_type">
-                            <option value="isbn">ISBN</option>
-                            <option value="title">Title</option>
-                            <option value="author">Author</option>
-                        </select>
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <select name="search_type">
+                                <option value="isbn">ISBN</option>
+                                <option value="title">Title</option>
+                                <option value="author">Author</option>
+                            </select>
+                        </div>
                     </div>
-                    <div>
-                        <input type="text" name="search_term" placeholder="Search">
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 ">
+                        <input type="text" class="form-control" id="search_term" name="search_term" placeholder="Search">
                     </div>
-                    <div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 ">
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </div>

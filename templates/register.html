@@ -7,11 +7,25 @@
     <body>
         {% block content %}
             <h1>Registration Form</h1>
-            <p>You're coming from {{ url }}</p>
-            <form action="{{ url_for('login_page') }}" method="post">
-                <input type="text" name="username" placeholder="Name">
-                <input type="password" name="password" placeholder="Password">
-                <input type="password" name="password_confirm" placeholder="Password confirm">
+            <form class="form-horizontal" action="{{ url_for('login_page') }}" method="post">
+                <div class="form-group">
+                    <label for="username" class="control-label">Username</label>
+                    <div class="">
+                        <input type="text" class="form-control" id="username" name="username" placeholder="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="control-label">Password</label>
+                    <div class="">
+                        <input type="password" class="form-control" id="password" name="password" placeholder="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password_confirm" class="control-label">Confirm password</label>
+                    <div class="">
+                        <input type="password_confirm" class="form-control" id="password" name="password" placeholder="">
+                    </div>
+                </div>
                 <button>Submit</button>
             <form>
         {% endblock content %}
