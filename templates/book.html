@@ -6,25 +6,32 @@
     </head>
     <body>
         {% block content %}
+            <div>
             <h1>Book Results</h1>
-            {% if s %}
-                <p> Hello, {{ s }} with user_id {{ session['user_id'] }}. Here are your book results. </p>
-            {% else %}
-                <p>Logged in, but no s value</p>
-            {% endif %}
-            <p> Not what you were looking for?</p>
+            <p>Not what you were looking for?</p>
             <a href="{{ url_for('search_page') }}"><p>Try again</p></a>
             <hr>
-            {% for result in results %}
-                <ul>
-                    <li><a href="{{ url_for('book_details', isbn_num=result.isbn) }}">{{ result }}</a></li>
-                </ul>
+            {% if results %}
+                <table class="table table-striped">
+                    <tr>
+                        <th scope="col">Title</th>
+                        <th scope="col">Author</th>
+                        <th scope="col">Year</th>
+                        <th scope="col">ISBN</th>
+                    </tr>
+                {% for result in results %}
+                    <tr>
+                        <td><a href="{{ url_for('book_details', isbn_num=result.isbn) }}">{{ result.title }}</a></li></td>
+                        <td><a href="{{ url_for('book_details', isbn_num=result.isbn) }}">{{ result.author }}</a></li></td>
+                        <td><a href="{{ url_for('book_details', isbn_num=result.isbn) }}">{{ result.year }}</a></li></td>
+                        <td><a href="{{ url_for('book_details', isbn_num=result.isbn) }}">{{ result.isbn }}</a></li></td>
+                    </tr>
+                {% endfor %}
+                </table>
             {% else %}
-            <div>no results given</div>
-            {% endfor %}
-            <p>{{ select }}</p>
-            <p>{{ search_box }}</p>
-            <p>{{ test_sql }}</p>
+                <p class="text-warning">No results found</p>
+            {% endif %}
+            </div>
         {% endblock content %}
     </body>
 </html>

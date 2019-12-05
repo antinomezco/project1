@@ -6,29 +6,39 @@
     </head>
     <body>
         {% block content %}
-            {% if s %}
-                <h1> Hello, {{ s }} </h1>
-            {% else %}
-                <h1>no username session</h1>
-            {% endif %}
-            <p>book details</p>
-            <p>isbn from database {{ book_data.isbn }}</p>
-            <p>isbn from html {{ isbn_num }}</p>
-            <p>Book author: {{ book_data.author }}</p>
-            <p>Book title: {{ book_data.title }}</p>
-            <p>Year or release: {{ book_data.year }}</p>
-            <p>Amount of ratings: {{ goodreads_data["books"][0]["ratings_count"] }}</p>
-            <p>Rating average: {{ goodreads_data["books"][0]["average_rating"] }}</p>
+            <table class="table table-striped">
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Year</th>
+                    <th scope="col">ISBN</th>
+                    <th scope="col">GR Ratings</th>
+                    <th scope="col">GR Average</th>
+                </tr>
+                <tr>
+                    <td>{{ book_data.title }}</td>
+                    <td>{{ book_data.author }}</td>
+                    <td>{{ book_data.year }}</td>
+                    <td>{{ book_data.isbn }}</td>
+                    <td>{{ goodreads_data["books"][0]["ratings_count"] }}</td>
+                    <td>{{ goodreads_data["books"][0]["average_rating"] }}</td>
+                </tr>
+            </table>
             {% if book_data.review %}
-                <p>{{ book_data.review }}</p>
+                <p class="col-sm-offset-2">Personal rating: {{ book_data.rating }}</p>
+                <p class="col-sm-offset-2">Personal review: {{ book_data.review }}</p>
+            </div>
             {% else %}
-                <form class="form-inline" method="POST" action="{{ url_for('review_post_page') }}">
+                <form class="form" method="POST" action="{{ url_for('review_post_page') }}">
                     <div class="form-group">
+                        <label for="review" class="control-label">Write your own review</label>
                         <div>
-                            <input type="text" name="review" placeholder="write review here">
+                            <textarea class="overflow-auto" rows="2" name="review" placeholder="Review"></textarea>
                         </div>
+                    </div>
+                    <div class="form-group">
                         <div class="input-group">
-                            <span class="input-group-addon">Give this book a number from 1-5</span>
+                            <div class="input-group-addon">Select book rating: </div>
                             <select name="rating">
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -37,12 +47,14 @@
                                 <option value="5">5</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="form-group">
                         <div>
                             <input type="hidden" name="isbn" value="{{ isbn_num }}">
                         </div>
-                        <div>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </div>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
             {% endif %}

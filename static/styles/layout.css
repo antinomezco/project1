@@ -1,0 +1,17 @@
+body{
+    background-image: url("../../images/wallpaper.jpg");
+    background-size: cover;
+}
+
+.card{
+    width: 40%;
+    margin-left: 10px
+}
+
+#top{
+    margin-top: 10px
+}
+
+#bottom{
+    margin-bottom: 10px
+}

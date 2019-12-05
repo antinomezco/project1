@@ -6,15 +6,11 @@
     </head>
     <body>
         {% block content %}
-            {% if s %}
-                <h1> Hello, {{ s }}, the review below is now in the database (maybe) </h1>
-            {% else %}
-                <h1>no username session</h1>
-            {% endif %}
-            <p>book details</p>
+            <h3> Your book page has been updated with your review and rating</h3>
+            <p>Review:</p>
             <p>{{ review }}</p>
+            <p>Rating:</p>
             <p>{{ rating }}</p>
-            <p>{{ isbn }}</p>
         {% endblock content %}
     </body>
 </html>
