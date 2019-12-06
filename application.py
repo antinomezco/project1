@@ -4,9 +4,9 @@ from flask import Flask, session, render_template, request, jsonify, abort
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-import requests, json
+import requests
 #from flask_wtf import FlaskForm # apparently necessary for CSRFProtect to work
-#from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect
 #from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
@@ -27,11 +27,14 @@ db = scoped_session(sessionmaker(bind=engine))
 # Set up Goodreads API key:
 grkey = os.getenv("GOODREADS_API_KEY") #connects to the Goodreads API with a particular key that I got from them by signing up
 
+#secret key for use with csrf
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+
 # Enabling jsonify pretty printing
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True #not sure if this works, but it's supposed to make such a page (ex. https://antinomy.pythonanywhere.com/book/0375913750) look prettier
 
 # Setting up CSRF security
-#csrf = CSRFProtect(app)
+csrf = CSRFProtect(app)
 
 @app.route("/")
 @app.route("/login", methods=["GET","POST"])
