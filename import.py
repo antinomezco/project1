@@ -13,8 +13,6 @@ def main():
     print("start")
     f = open("books.csv")
     reader = csv.reader(f)
-    #has_header = csv.Sniffer().has_header(f.read(1024))
-    #if has_header:
     next(reader)  # Skip header row.
     for isbn, ttl, auth, yr in reader:
         db.execute("INSERT INTO books_table (isbn, title, author, year) VALUES (:isbn, :title, :author, :year)",

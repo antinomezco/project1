@@ -8,6 +8,7 @@
         {% block content %}
             <h1>Registration Form</h1>
             <form class="form-horizontal" action="{{ url_for('login_page') }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="form-group">
                     <label for="username" class="control-label">Username</label>
                     <div class="">
@@ -23,7 +24,7 @@
                 <div class="form-group">
                     <label for="password_confirm" class="control-label">Confirm password</label>
                     <div class="">
-                        <input type="password_confirm" class="form-control" id="password" name="password" placeholder="">
+                        <input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="">
                     </div>
                 </div>
                 <button>Submit</button>

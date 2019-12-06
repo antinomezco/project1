@@ -4,10 +4,10 @@ from flask import Flask, session, render_template, request, jsonify, abort
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-import requests, json
+import requests
 #from flask_wtf import FlaskForm # apparently necessary for CSRFProtect to work
-#from flask_wtf.csrf import CSRFProtect
-#from werkzeug.security import generate_password_hash
+from flask_wtf.csrf import CSRFProtect
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
@@ -27,11 +27,14 @@ db = scoped_session(sessionmaker(bind=engine))
 # Set up Goodreads API key:
 grkey = os.getenv("GOODREADS_API_KEY") #connects to the Goodreads API with a particular key that I got from them by signing up
 
+#secret key for use with csrf
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+
 # Enabling jsonify pretty printing
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True #not sure if this works, but it's supposed to make such a page (ex. https://antinomy.pythonanywhere.com/book/0375913750) look prettier
 
 # Setting up CSRF security
-#csrf = CSRFProtect(app)
+csrf = CSRFProtect(app)
 
 @app.route("/")
 @app.route("/login", methods=["GET","POST"])
@@ -42,11 +45,14 @@ def login_page():
         if url == "https://antinomy.pythonanywhere.com/register":
             rmessage = "Thanks for registering, please log in" #the prev line checks whether you come from the register page. if so, then it puts the string phrase into the variable
         username = request.form.get("username") #gets the name from the form from the register page
-        password = request.form.get("password") #same, but for the password
+        password_register = request.form.get("password") #same, but for the password
         password_confirm = request.form.get("password_confirm") #confirms if the password is repeated correctly
-        if password != password_confirm:
+        if password_register != password_confirm: #checks if password_register and password_confirm are the same, if not it throws an error
             return render_template("error.html", message="Password mismatch.")
-        db.execute("INSERT INTO username_table VALUES (:username, :password)", {"username": username, "password": password}) #inserts the username and pass onto the db
+        if len(password_register) < 8 or len(password_confirm) < 8: #for password safety, a string over 8 characters is enforced
+            return render_template("error.html", message="Password too short")
+        password_register_sha = generate_password_hash(password_register, "sha256") #hashes the received password using sha256
+        db.execute("INSERT INTO username_table VALUES (:username, :password)", {"username": username, "password": password_register_sha}) #inserts the username and pass onto the db
         db.commit() #executes the prev INSERT command
     title = "Login"
     return render_template("login.html", title=title, rmessage=rmessage)
@@ -56,12 +62,12 @@ def search_page():
     title = "Search"
     if request.method == 'POST':
         username = request.form.get("username") #get the data from the form coming from login
-        password = request.form.get("password")
-        user_match = db.execute("SELECT username, password, user_id FROM username_table WHERE username = :username AND password = :password", {"username": username, "password": password}).fetchone() #tries to find if the inputted username and password from the login page do actually exist in the database
+        password_login = request.form.get("password")
+        user_match = db.execute("SELECT username, password, user_id FROM username_table WHERE username = :username", {"username": username}).fetchone() #tries to find if the inputted username and password from the login page do actually exist in the database
+        if user_match is None or not check_password_hash(user_match.password, password_login): #if there's no username and password match in the db, then it goes to the page below or if the inputted password doesn't coincide with its hash
+            return render_template("error.html", message="Incorrect username and/or password.")
         session['username']=username #puts the collected username in the session global variable which will keep track of the logged in user (just whether they're logged in or not)
         session['user_id']=user_match.user_id
-        if user_match is None: #if there's no username and password match in the db, then it goes to the page below
-            return render_template("error.html", message="Incorrect username and/or password.")
     if 'username' in session: #the previously mentioned session global variable is checked to verify that the user is logged on, if so then if loads the search.html page as shown below
         s = session['username'];
         return render_template('search.html', s = s, title=title)

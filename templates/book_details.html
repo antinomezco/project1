@@ -6,7 +6,7 @@
     </head>
     <body>
         {% block content %}
-            <table class="table table-striped">
+            <table class="table table-striped table-responsive">
                 <tr>
                     <th scope="col">Title</th>
                     <th scope="col">Author</th>
@@ -27,6 +27,7 @@
             {% if book_data.review %}
             {% else %}
                 <form class="form" method="POST" action="{{ url_for('review_post_page') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="form-group">
                         <label for="review" class="control-label">Write your own review</label>
                         <div>
@@ -56,7 +57,7 @@
                 </form>
             {% endif %}
             {% if user_reviews %}
-                <table class="table table-striped">
+                <table class="table table-striped table-responsive">
                     <tr>
                         <th scope="col">User</th>
                         <th scope="col">Review</th>

@@ -12,6 +12,7 @@
                 <h1>Please log in</h1>
             {% endif %}
             <form class="form-horizontal" action="{{ url_for('search_page') }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="form-group">
                     <label for="username" class="control-label">Username</label>
                     <div class="">
