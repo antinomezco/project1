@@ -28,6 +28,8 @@ books.csv: file to import into the database with import.py
 
 import.py: connects to the database and adds files from the books.csv file
 
+requirements.txt: installed packages necessary for the project to run
+
 images/wallpaper.jpg: background image
 
 static/styles/layout.css: simple css file to slightly improve aesthetics.
@@ -40,6 +42,9 @@ such as the amount of reviews, the average
 rating from Goodreads(both using its API), along with other user reviews and
 ratings. If your username hasn't uploaded a review, a text box will appear
 allowing you to add it, along with a number rating.
+
+templates/book_details.html/<isbn>: gives a json file of the book with basic
+information, including data from goodreads.
 
 templates/error.html: error page that shows a different message according to the
 error, such as too short a password when registering or trying to login with a
